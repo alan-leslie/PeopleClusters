@@ -110,24 +110,18 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
             System.out.println("Source:" + theItem.getSource());
 
             System.out.println("Targets:");
-            LinkMagnitudeVector theTargets = theItem.getLinkMagnitudeVector();
-            List<LinkMagnitude> linkMagnitudes = theTargets.getLinkMagnitudes();
+            List<String> theTargets = theItem.getLinks(); //.getLinkMagnitudeVector();
 
-            for (LinkMagnitude theMag : linkMagnitudes) {
-                double dMag = theMag.getMagnitude();
-                String theLink = theMag.getLink();
-                
-                if (dMag > 0.0) {
-                    System.out.println(theLink);
-                }
-            }
-
-            System.out.println("Links:");
-            List<String> links = theItem.getLinks();
-
-            for (String theLink : links) {
+            for (String theLink : theTargets) {
                 System.out.println(theLink);
             }
+
+//            System.out.println("Links:");
+//            List<String> links = theItem.getLinks();
+//
+//            for (String theLink : links) {
+//                System.out.println(theLink);
+//            }
         }
     }
 }

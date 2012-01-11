@@ -10,6 +10,12 @@ public class LinkMagnitudeImpl implements LinkMagnitude {
     private double magnitude = 0.0;
 
     public LinkMagnitudeImpl(String tag, double magnitude) {
+        
+        if(!(magnitude == 0.0 ||
+                magnitude == 1.0)){
+            int x = 0;          
+        }
+        
         this.tag = tag;
         this.magnitude = magnitude;
     }
