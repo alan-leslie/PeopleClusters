@@ -110,18 +110,19 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
             System.out.println("Source:" + theItem.getSource());
 
             System.out.println("Targets:");
-            List<String> theTargets = theItem.getLinks(); //.getLinkMagnitudeVector();
+            List<String> theTargets = theItem.getLinks(); 
 
             for (String theLink : theTargets) {
                 System.out.println(theLink);
             }
 
-//            System.out.println("Links:");
-//            List<String> links = theItem.getLinks();
-//
-//            for (String theLink : links) {
-//                System.out.println(theLink);
-//            }
+            // magnitudes in a vector shoul be normalized
+            LinkMagnitudeVector linkMagnitudeVector = theItem.getLinkMagnitudeVector();
+            List<LinkMagnitude> theMags = linkMagnitudeVector.getLinkMagnitudes();
+            
+            for (LinkMagnitude theMag : theMags) {
+                System.out.println(theMag);
+            }
         }
     }
 }

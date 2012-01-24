@@ -83,9 +83,9 @@ public class PageLinks implements WebLinkDataItem {
         List<LinkMagnitude> linkMag = new ArrayList<LinkMagnitude>();
         
         for (int index = 0; index < numLinks(); ++index) {
-            String theLink = getLinkAt(index);
-            LinkMagnitude theMag = new LinkMagnitudeImpl(theLink, 1.0);
-            linkMag.add(theMag);
+            LinkMagnitude theMag = otherLinks.get(index);
+            LinkMagnitude theNewMag = new LinkMagnitudeImpl(theMag.getLink(), theMag.getMagnitude());
+            linkMag.add(theNewMag);
         }
 
         LinkMagnitudeVector retVal = new LinkMagnitudeVectorImpl(linkMag);
