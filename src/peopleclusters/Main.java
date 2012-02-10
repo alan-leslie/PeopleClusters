@@ -54,8 +54,11 @@ public class Main {
 
         try {
             String linkFileName = properties.getProperty("LinkFileName", "cluster4.psv");
+            String strPeopleOnly = properties.getProperty("PeopleOnly", "false");
+            boolean peopleOnly = strPeopleOnly.equalsIgnoreCase("true");
             PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
-            pt.createFromFile(linkFileName);
+            String isPersonFileName = properties.getProperty("IsPersonFileName", "peeps_classify.txt");
+            pt.createFromFile(linkFileName, peopleOnly, isPersonFileName);
             
             List<WebLinkDataItem> theItems = pt.calculateLinkMagnitudes();
             List<WebLinkDataItem> testData = new ArrayList<WebLinkDataItem>();

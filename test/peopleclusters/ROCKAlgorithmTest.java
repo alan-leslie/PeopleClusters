@@ -27,7 +27,7 @@ public class ROCKAlgorithmTest {
 //            public void run() {
                 try {
                     PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
-                    pt.createFromFile("cluster4.psv");
+                    pt.createFromFile("cluster4.psv", false, "");
 
                     List<WebLinkDataItem> theItems = pt.calculateLinkMagnitudes();
 

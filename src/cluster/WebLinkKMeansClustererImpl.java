@@ -1,5 +1,8 @@
 package cluster;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pagelinks.WebLinkDataItem;
 import java.util.*;
 import pagelinks.PageLinksDataSetManagerImpl;
@@ -120,13 +123,17 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
     }
 
     public static void main(String[] args) {
-        PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
-        pt.createFromFile("cluster4.psv");
+        try {
+            PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
+            pt.createFromFile("cluster4.psv", false, "");
 
-        WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(2);
-        WebLinkCluster rootCluster = new ClusterImpl(0, pt);
-        rootCluster.hierCluster(clusterer);
+            WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(2);
+            WebLinkCluster rootCluster = new ClusterImpl(0, pt);
+            rootCluster.hierCluster(clusterer);
 
-        System.out.println(rootCluster.getSubClusters().toString());
+            System.out.println(rootCluster.getSubClusters().toString());
+        } catch (IOException ex) {
+            Logger.getLogger(WebLinkKMeansClustererImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

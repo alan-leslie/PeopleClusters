@@ -1,5 +1,6 @@
 package pagelinks;
 
+import java.io.IOException;
 import peopleclustrs.utils.InverseDocFreqEstimator;
 import peopleclustrs.utils.CSVFile;
 import peopleclustrs.utils.InverseDocFreqEstimatorImpl;
@@ -16,10 +17,24 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
 
     private List<WebLinkDataItem> peopleLinksList = null;
     Map<String, PageLinks> peopleLinks = null;
+    private Set<String> isPersonSet = null;
 
-    public void createFromFile(String linkFileName) {
+    public void createFromFile(String linkFileName,
+            boolean peopleOnly,
+            String theIsPersonFileName) throws IOException {
         List<String[]> fileData = CSVFile.getFileData(linkFileName, "\\|");
-        peopleLinks = generateMap(fileData);
+
+        isPersonSet = new TreeSet<String>();
+
+        if (peopleOnly) {
+            List<String> isPersonData = CSVFile.getFileLines(theIsPersonFileName);
+
+            for (String person : isPersonData) {
+                isPersonSet.add(person);
+            }
+        }
+
+        peopleLinks = generateMap(fileData, peopleOnly);
         peopleLinksList = getData();
     }
 
@@ -27,22 +42,38 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
         peopleLinksList = newLinks;
     }
 
-    private Map<String, PageLinks> generateMap(List<String[]> fileData) {
+    private Map<String, PageLinks> generateMap(List<String[]> fileData,
+            boolean peopleOnly) {
         Map<String, PageLinks> retVal = new HashMap<String, PageLinks>();
+
+        for (String[] theLinkPair : fileData) {
+            String theSource = theLinkPair[0];
+            PageLinks theLinks = null;
+
+            if (peopleOnly && isPersonSet.contains(theSource)) {
+                if (!retVal.containsKey(theSource)) {
+                    theLinks = new PageLinks(theSource);
+                    retVal.put(theSource, theLinks);
+                }
+            }
+        }
 
         for (String[] theLinkPair : fileData) {
             String theSource = theLinkPair[0];
             String theTarget = theLinkPair[1];
             LinkMagnitude theMag = new LinkMagnitudeImpl(theTarget, 1.0);
             PageLinks theLinks = null;
+            boolean shouldAddLink = true;
+
+            if (peopleOnly && isPersonSet.contains(theTarget)) {
+                shouldAddLink = false;
+            }
 
             if (retVal.containsKey(theSource)) {
-                theLinks = retVal.get(theSource);
-                theLinks.addLink(theMag);
-            } else {
-                theLinks = new PageLinks(theSource);
-                theLinks.addLink(theMag);
-                retVal.put(theSource, theLinks);
+                if (shouldAddLink) {
+                    theLinks = retVal.get(theSource);
+                    theLinks.addLink(theMag);
+                }
             }
         }
 
@@ -102,7 +133,7 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
 
     public static void main(String[] args) throws Exception {
         PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
-        pt.createFromFile("cluster4.psv");
+        pt.createFromFile("cluster4.psv", false, "");
 
         List<WebLinkDataItem> beList = pt.calculateLinkMagnitudes();
 
@@ -110,7 +141,7 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
             System.out.println("Source:" + theItem.getSource());
 
             System.out.println("Targets:");
-            List<String> theTargets = theItem.getLinks(); 
+            List<String> theTargets = theItem.getLinks();
 
             for (String theLink : theTargets) {
                 System.out.println(theLink);
@@ -119,7 +150,7 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
             // magnitudes in a vector shoul be normalized
             LinkMagnitudeVector linkMagnitudeVector = theItem.getLinkMagnitudeVector();
             List<LinkMagnitude> theMags = linkMagnitudeVector.getLinkMagnitudes();
-            
+
             for (LinkMagnitude theMag : theMags) {
                 System.out.println(theMag);
             }
