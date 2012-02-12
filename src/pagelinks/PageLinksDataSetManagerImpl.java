@@ -8,6 +8,7 @@ import java.util.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import peopleclustrs.utils.DumpFile;
 
 /**
  *
@@ -18,6 +19,16 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
     private List<WebLinkDataItem> peopleLinksList = null;
     Map<String, PageLinks> peopleLinks = null;
     private Set<String> isPersonSet = null;
+
+    public void dumpLinks(String dumpFileName) {
+        List<PageLinks> theLinks = new ArrayList<PageLinks>();
+        
+        for (Map.Entry<String, PageLinks> entry : peopleLinks.entrySet()) {
+            theLinks.add(entry.getValue());
+        }
+
+        DumpFile.writeLinks(dumpFileName, theLinks);
+    }
 
     public void createFromFile(String linkFileName,
             boolean peopleOnly,
@@ -65,8 +76,10 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
             PageLinks theLinks = null;
             boolean shouldAddLink = true;
 
-            if (peopleOnly && isPersonSet.contains(theTarget)) {
-                shouldAddLink = false;
+            if (peopleOnly){
+                if(!isPersonSet.contains(theTarget)) {
+                    shouldAddLink = false;
+                }
             }
 
             if (retVal.containsKey(theSource)) {

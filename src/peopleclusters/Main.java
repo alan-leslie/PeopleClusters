@@ -7,7 +7,7 @@ import pagelinks.WebLinkDataItem;
 import iweb2.clustering.hierarchical.Dendrogram;
 import iweb2.clustering.rock.LinkMatrix;
 import iweb2.clustering.rock.ROCKAlgorithm;
-import peopleclustrs.utils.XMLFile;
+import peopleclustrs.utils.DumpFile;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -58,7 +58,13 @@ public class Main {
             boolean peopleOnly = strPeopleOnly.equalsIgnoreCase("true");
             PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
             String isPersonFileName = properties.getProperty("IsPersonFileName", "peeps_classify.txt");
+            String dumpFileName = properties.getProperty("DumpFileName");
             pt.createFromFile(linkFileName, peopleOnly, isPersonFileName);
+            
+            if(dumpFileName != null &&
+                    !dumpFileName.isEmpty()){
+                pt.dumpLinks(dumpFileName);
+            }
             
             List<WebLinkDataItem> theItems = pt.calculateLinkMagnitudes();
             List<WebLinkDataItem> testData = new ArrayList<WebLinkDataItem>();
@@ -82,7 +88,7 @@ public class Main {
             Dendrogram dnd = rock.cluster();
 
             dnd.printAll();
-            XMLFile.writeXML("ROCKTest.xml", dnd.asXML());
+            DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
         } catch (Exception ex) {
             theLogger.log(Level.SEVERE, null, ex);
         }

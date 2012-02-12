@@ -8,7 +8,7 @@ import cluster.ClusterImpl;
 //import com.alag.ci.cluster.DataSetCreator;
 import cluster.WebLinkCluster;
 import pagelinks.WebLinkDataItem;
-import peopleclustrs.utils.XMLFile;
+import peopleclustrs.utils.DumpFile;
 import iweb2.similarity.JaccardCoefficient;
 import iweb2.similarity.SimilarityMeasure;
 
@@ -109,7 +109,7 @@ public class ROCKAlgorithm {
 //            ROCKAlgorithm rock = new ROCKAlgorithm(testData, k, th);
 //            Dendrogram dnd = rock.cluster();
 //            dnd.printAll();
-//            XMLFile.writeXML("ROCKTest.xml", dnd.asXML());
+//            DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
 //
 //            TreeView.createAndShowGUI(dnd);
 //        } catch (Exception ex) {
