@@ -121,7 +121,7 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
         freqEstimator.outputFrequencies();
         freqEstimator.outputInverseFrequencies();
         System.out.println("");
-        freqEstimator.prune(10, 90);
+//        freqEstimator.prune(10, 90);
 
         for (WebLinkDataItem thePage : peopleLinksList) {
             PageLinks adjustedLinks = new PageLinks(thePage.getSource());

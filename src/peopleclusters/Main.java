@@ -78,7 +78,7 @@ public class Main {
             }
 
             int k = 1;
-            double th = 0.2;
+            double th = 0.15;
             ROCKAlgorithm rock = new ROCKAlgorithm(testData, k, th);
             LinkMatrix linkMatrix = rock.getLinkMatrix();
             linkMatrix.printSimilarityMatrix();
@@ -87,7 +87,7 @@ public class Main {
 
             Dendrogram dnd = rock.cluster();
 
-            dnd.printAll();
+//            dnd.printAll();
             DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
         } catch (Exception ex) {
             theLogger.log(Level.SEVERE, null, ex);
