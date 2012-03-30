@@ -272,4 +272,9 @@ public class ClusterImpl implements WebLinkCluster {
         String theXML = theBuilder.toString();
         return theXML;
     }
+
+    @Override
+    public double costFunction() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

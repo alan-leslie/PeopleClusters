@@ -37,10 +37,11 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
 
         isPersonSet = new TreeSet<String>();
 
-        if (peopleOnly) {
-            List<String> isPersonData = CSVFile.getFileLines(theIsPersonFileName);
 
-            for (String person : isPersonData) {
+        if (peopleOnly) {
+         List<String> isPersonData = CSVFile.getFileLines(theIsPersonFileName);
+         
+         for (String person : isPersonData) {
                 isPersonSet.add(person);
             }
         }
@@ -60,8 +61,13 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
         for (String[] theLinkPair : fileData) {
             String theSource = theLinkPair[0];
             PageLinks theLinks = null;
+            boolean shouldAdd = true;
+            
+            if(peopleOnly && !isPersonSet.contains(theSource)){
+                shouldAdd = false;
+            }
 
-            if (peopleOnly && isPersonSet.contains(theSource)) {
+            if (shouldAdd) {
                 if (!retVal.containsKey(theSource)) {
                     theLinks = new PageLinks(theSource);
                     retVal.put(theSource, theLinks);
@@ -138,7 +144,7 @@ public class PageLinksDataSetManagerImpl implements DataSetManager {
                 adjustedLinks.addLink(theLink);
             }
 
-            result.add((WebLinkDataItem) adjustedLinks);
+            result.add(adjustedLinks);
         }
 
         return result;

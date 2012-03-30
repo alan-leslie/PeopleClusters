@@ -57,7 +57,9 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
     private WebLinkDataItem getDataItemAtRandom(Map<Integer, Integer> usedIndexes) {
         boolean found = false;
         while (!found) {
-            int index = (int) Math.floor(Math.random() * this.textDataSet.size());
+            double dataSetSize = (double)this.textDataSet.size();
+            double theRandomNo = Math.random() * dataSetSize;
+            int index = (int) Math.floor(theRandomNo);
             if (!usedIndexes.containsKey(index)) {
                 System.out.println(index);
                 usedIndexes.put(index, index);
@@ -111,6 +113,41 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
         }
         return closestCluster;
     }
+    
+    public double costFunction(){
+        double retVal = 0.0;
+        
+        for(WebLinkCluster theCluster: clusters){
+            Set<WebLinkDataItem> theElements = theCluster.getElements();
+            int internalLinks = 0;
+            int externalLinks = 0;
+            
+            for(WebLinkDataItem theItem: theElements){
+                for(String theLink: theItem.getLinks()){
+                    boolean internalLinkFound = false;
+                    for(WebLinkDataItem theComparisonItem: theElements){
+                        if(theComparisonItem.getSource().equalsIgnoreCase(theLink)){
+                            internalLinkFound = true;
+                        }
+                    }
+                    
+                    if(internalLinkFound){
+                        ++internalLinks;
+                    } else {
+                        ++externalLinks;
+                    }
+                }
+            }
+            
+            if(externalLinks == 0){
+                externalLinks = 1;
+            }
+            
+            retVal += (double)internalLinks / (double)externalLinks;
+        }
+        
+        return retVal;
+    }
 
     @Override
     public String toString() {
@@ -123,15 +160,29 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
     }
 
     public static void main(String[] args) {
+        Properties properties = new Properties();
+                
         try {
             PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
-            pt.createFromFile("cluster4.psv", false, "");
+            //pt.createFromFile("cluster4.psv", false, "");
+            String linkFileName = properties.getProperty("LinkFileName", "cluster4.psv");
+            String strPeopleOnly = properties.getProperty("PeopleOnly", "false");
+            boolean peopleOnly = strPeopleOnly.equalsIgnoreCase("true");
+            //PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
+            String isPersonFileName = properties.getProperty("IsPersonFileName", "peeps_classify.txt");
+            String dumpFileName = properties.getProperty("DumpFileName");
+            pt.createFromFile(linkFileName, peopleOnly, isPersonFileName);
+
 
             WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(2);
-            WebLinkCluster rootCluster = new ClusterImpl(0, pt);
-            rootCluster.hierCluster(clusterer);
-
-            System.out.println(rootCluster.getSubClusters().toString());
+            List<WebLinkCluster> clusters = clusterer.cluster();
+            //           WebLinkCluster rootCluster = new ClusterImpl(0, pt);
+            //           rootCluster.hierCluster(clusterer);
+            //            System.out.println(rootCluster.getSubClusters().toString());
+            
+            for(WebLinkCluster theCluster: clusters){
+                System.out.println(theCluster.getTitle());
+            }
         } catch (IOException ex) {
             Logger.getLogger(WebLinkKMeansClustererImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

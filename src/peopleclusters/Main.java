@@ -3,6 +3,7 @@ package peopleclusters;
 import pagelinks.DataSetManager;
 import pagelinks.PageLinksDataSetManagerImpl;
 import cluster.WebLinkCluster;
+import cluster.WebLinkKMeansClustererImpl;
 import pagelinks.WebLinkDataItem;
 import iweb2.clustering.hierarchical.Dendrogram;
 import iweb2.clustering.rock.LinkMatrix;
@@ -59,36 +60,53 @@ public class Main {
             PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
             String isPersonFileName = properties.getProperty("IsPersonFileName", "peeps_classify.txt");
             String dumpFileName = properties.getProperty("DumpFileName");
+            String strNoOfClusters = properties.getProperty("NoOfClusters", "10");
+            int noOfClusters = Integer.parseInt(strNoOfClusters);
+            String strClusterType = properties.getProperty("ClusterType", "KMeans");
+
             pt.createFromFile(linkFileName, peopleOnly, isPersonFileName);
-            
-            if(dumpFileName != null &&
-                    !dumpFileName.isEmpty()){
+
+            if (dumpFileName != null
+                    && !dumpFileName.isEmpty()) {
                 pt.dumpLinks(dumpFileName);
             }
-            
+
             List<WebLinkDataItem> theItems = pt.calculateLinkMagnitudes();
             List<WebLinkDataItem> testData = new ArrayList<WebLinkDataItem>();
-            
-            for(WebLinkDataItem theItem: theItems){
-                if(theItem.getLinks().isEmpty()){
+
+            for (WebLinkDataItem theItem : theItems) {
+                if (theItem.getLinks().isEmpty()) {
                     theLogger.log(Level.WARNING, "{0} has no items", theItem.getSource());
                 } else {
                     testData.add(theItem);
                 }
             }
 
-            int k = 1;
-            double th = 0.15;
-            ROCKAlgorithm rock = new ROCKAlgorithm(testData, k, th);
-            LinkMatrix linkMatrix = rock.getLinkMatrix();
-            linkMatrix.printSimilarityMatrix();
-            linkMatrix.printPointNeighborMatrix();
-            linkMatrix.printPointLinkMatrix();
+            if (strClusterType.equalsIgnoreCase("KMeans")) {
+                WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(noOfClusters);
 
-            Dendrogram dnd = rock.cluster();
+                clusterer.setDataSet(testData);
+                List<WebLinkCluster> clusters = clusterer.cluster();
+ 
+                double cost = 0.0;
+                
+                for (WebLinkCluster theCluster : clusters) {
+                    System.out.println(theCluster.getTitle());
+                    cost += theCluster.costFunction();
+                }
+            } else {
+                double th = 0.15;
+                ROCKAlgorithm rock = new ROCKAlgorithm(testData, noOfClusters, th);
+                LinkMatrix linkMatrix = rock.getLinkMatrix();
+                linkMatrix.printSimilarityMatrix();
+                linkMatrix.printPointNeighborMatrix();
+                linkMatrix.printPointLinkMatrix();
+
+                Dendrogram dnd = rock.cluster();
 
 //            dnd.printAll();
-            DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
+                DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
+            }
         } catch (Exception ex) {
             theLogger.log(Level.SEVERE, null, ex);
         }
