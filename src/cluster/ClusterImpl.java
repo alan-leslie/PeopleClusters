@@ -257,13 +257,25 @@ public class ClusterImpl implements WebLinkCluster {
         StringBuilder theBuilder = new StringBuilder();
         theBuilder.append("<cluster>\n");
         theBuilder.append("<name>");
-        if (getElements().size() > 1) {
+        Set<WebLinkDataItem> theElements = getElements();
+        int noOfElements = theElements.size();
+        
+        if (noOfElements > 1) {
             theBuilder.append(Integer.toString(getClusterId()));
         } else {
             theBuilder.append(getElementsAsString());
         }
         theBuilder.append("</name>\n");
-        if (subClusters != null) {
+        if (subClusters == null) {
+            if(noOfElements > 1){
+                for(WebLinkDataItem theItem: theElements){
+                    theBuilder.append("<cluster>\n");
+                    theBuilder.append("<name>{" + theItem.getSource() + "}\n");
+                    theBuilder.append("</name>\n");
+                    theBuilder.append("</cluster>\n");
+                }
+            }
+        } else {
             for (WebLinkCluster subCluster : subClusters) {
                 theBuilder.append(subCluster.asXML());
             }

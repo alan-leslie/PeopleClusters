@@ -32,6 +32,9 @@ public class Dendrogram {
 
     /**
      * Creates a new dendrogram level using copies of provided clusters. 
+     * @param label
+     * @param clusters
+     * @return  
      */
     public int addLevel(String label, Collection<WebLinkCluster> clusters) {
 
@@ -59,7 +62,6 @@ public class Dendrogram {
      * @param level dendrogram level.
      * @param label level description.
      * @param clusters clusters for the level.
-     * @return 
      */
     public void setLevel(int level, String label, Collection<WebLinkCluster> clusters) {
 

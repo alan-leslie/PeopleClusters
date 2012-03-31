@@ -1,6 +1,5 @@
 package peopleclusters;
 
-import pagelinks.DataSetManager;
 import pagelinks.PageLinksDataSetManagerImpl;
 import cluster.WebLinkCluster;
 import cluster.WebLinkKMeansClustererImpl;
@@ -62,6 +61,8 @@ public class Main {
             String dumpFileName = properties.getProperty("DumpFileName");
             String strNoOfClusters = properties.getProperty("NoOfClusters", "10");
             int noOfClusters = Integer.parseInt(strNoOfClusters);
+            String strNoOfIterations = properties.getProperty("NoOfIterations", "50");
+            int noOfIterations = Integer.parseInt(strNoOfIterations);
             String strClusterType = properties.getProperty("ClusterType", "KMeans");
 
             pt.createFromFile(linkFileName, peopleOnly, isPersonFileName);
@@ -82,17 +83,42 @@ public class Main {
                 }
             }
 
+            double minCost = Double.MAX_VALUE;
+            double maxCost = -1.0;
+
             if (strClusterType.equalsIgnoreCase("KMeans")) {
                 WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(noOfClusters);
 
                 clusterer.setDataSet(testData);
-                List<WebLinkCluster> clusters = clusterer.cluster();
 
-                double cost = clusterer.costFunction();
+                for (int i = 0; i < noOfIterations; ++i) {
+                    List<WebLinkCluster> clusters = clusterer.cluster();
 
-                for (WebLinkCluster theCluster : clusters) {
-                    int noOfElements = theCluster.getElements().size();
-                    System.out.println("Cluster: " + theCluster.getTitle() + "item count = " + Integer.toString(noOfElements));
+                    double cost = clusterer.costFunction();
+
+                    for (WebLinkCluster theCluster : clusters) {
+                        int noOfElements = theCluster.getElements().size();
+                        System.out.println("Cluster: " + theCluster.getTitle() + "item count = " + Integer.toString(noOfElements));
+                    }
+
+                    if (cost < minCost) {
+                        Dendrogram dnd = new Dendrogram("TopLevel");
+                        dnd.addLevel(String.valueOf(cost), clusters);
+
+                        DumpFile.writeXML("KMeansMin.xml", dnd.asXML());
+                        minCost = cost;
+                    }
+
+                    if (cost > maxCost) {
+                        Dendrogram dnd = new Dendrogram("TopLevel");
+                        dnd.addLevel(String.valueOf(cost), clusters);
+
+                        DumpFile.writeXML("KMeansMax.xml", dnd.asXML());
+                        maxCost = cost;
+                    }
+                    
+                    System.out.println("Max cost = " + String.valueOf(maxCost));
+                    System.out.println("Min cost = " + String.valueOf(minCost));
                 }
             } else {
                 double th = 0.15;
