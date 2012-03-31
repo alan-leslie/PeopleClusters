@@ -48,7 +48,7 @@ public class ClusterImpl implements WebLinkCluster {
         this.clusterId = idCounter++;
         this.items = theItems;
     }
-    
+
     @Override
     public void computeCenter() {
         if (this.items.isEmpty()) {
@@ -257,8 +257,8 @@ public class ClusterImpl implements WebLinkCluster {
         StringBuilder theBuilder = new StringBuilder();
         theBuilder.append("<cluster>\n");
         theBuilder.append("<name>");
-        if(getElements().size() > 1){
-            theBuilder.append(Integer.toString(getClusterId())); 
+        if (getElements().size() > 1) {
+            theBuilder.append(Integer.toString(getClusterId()));
         } else {
             theBuilder.append(getElementsAsString());
         }
@@ -271,10 +271,5 @@ public class ClusterImpl implements WebLinkCluster {
         theBuilder.append("</cluster>\n");
         String theXML = theBuilder.toString();
         return theXML;
-    }
-
-    @Override
-    public double costFunction() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

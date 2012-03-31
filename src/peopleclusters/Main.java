@@ -87,12 +87,12 @@ public class Main {
 
                 clusterer.setDataSet(testData);
                 List<WebLinkCluster> clusters = clusterer.cluster();
- 
-                double cost = 0.0;
-                
+
+                double cost = clusterer.costFunction();
+
                 for (WebLinkCluster theCluster : clusters) {
-                    System.out.println(theCluster.getTitle());
-                    cost += theCluster.costFunction();
+                    int noOfElements = theCluster.getElements().size();
+                    System.out.println("Cluster: " + theCluster.getTitle() + "item count = " + Integer.toString(noOfElements));
                 }
             } else {
                 double th = 0.15;

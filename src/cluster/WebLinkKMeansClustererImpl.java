@@ -46,18 +46,27 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
 
     private void intitializeClusters() {
         this.clusters = new ArrayList<WebLinkCluster>();
-        Map<Integer, Integer> usedIndexes = new HashMap<Integer, Integer>();
-        for (int i = 0; i < this.numClusters; i++) {
-            ClusterImpl cluster = new ClusterImpl(i);
-            cluster.setCenter(getDataItemAtRandom(usedIndexes).getLinkMagnitudeVector());
-            this.clusters.add(cluster);
+
+        if (numClusters > textDataSet.size()) {
+            for (int i = 0; i < this.numClusters; i++) {
+                ClusterImpl cluster = new ClusterImpl(i);
+                cluster.setCenter(textDataSet.get(i).getLinkMagnitudeVector());
+                this.clusters.add(cluster);
+            }
+        } else {
+            Map<Integer, Integer> usedIndexes = new HashMap<Integer, Integer>();
+            for (int i = 0; i < this.numClusters; i++) {
+                ClusterImpl cluster = new ClusterImpl(i);
+                cluster.setCenter(getDataItemAtRandom(usedIndexes).getLinkMagnitudeVector());
+                this.clusters.add(cluster);
+            }
         }
     }
 
     private WebLinkDataItem getDataItemAtRandom(Map<Integer, Integer> usedIndexes) {
         boolean found = false;
         while (!found) {
-            double dataSetSize = (double)this.textDataSet.size();
+            double dataSetSize = (double) this.textDataSet.size();
             double theRandomNo = Math.random() * dataSetSize;
             int index = (int) Math.floor(theRandomNo);
             if (!usedIndexes.containsKey(index)) {
@@ -113,39 +122,39 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
         }
         return closestCluster;
     }
-    
-    public double costFunction(){
+
+    public double costFunction() {
         double retVal = 0.0;
-        
-        for(WebLinkCluster theCluster: clusters){
+
+        for (WebLinkCluster theCluster : clusters) {
             Set<WebLinkDataItem> theElements = theCluster.getElements();
             int internalLinks = 0;
             int externalLinks = 0;
-            
-            for(WebLinkDataItem theItem: theElements){
-                for(String theLink: theItem.getLinks()){
+
+            for (WebLinkDataItem theItem : theElements) {
+                for (String theLink : theItem.getLinks()) {
                     boolean internalLinkFound = false;
-                    for(WebLinkDataItem theComparisonItem: theElements){
-                        if(theComparisonItem.getSource().equalsIgnoreCase(theLink)){
+                    for (WebLinkDataItem theComparisonItem : theElements) {
+                        if (theComparisonItem.getSource().equalsIgnoreCase(theLink)) {
                             internalLinkFound = true;
                         }
                     }
-                    
-                    if(internalLinkFound){
+
+                    if (internalLinkFound) {
                         ++internalLinks;
                     } else {
                         ++externalLinks;
                     }
                 }
             }
-            
-            if(externalLinks == 0){
+
+            if (externalLinks == 0) {
                 externalLinks = 1;
             }
-            
-            retVal += (double)internalLinks / (double)externalLinks;
+
+            retVal += (double) internalLinks / (double) externalLinks;
         }
-        
+
         return retVal;
     }
 
@@ -161,7 +170,7 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
-                
+
         try {
             PageLinksDataSetManagerImpl pt = new PageLinksDataSetManagerImpl();
             //pt.createFromFile("cluster4.psv", false, "");
@@ -179,8 +188,8 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
             //           WebLinkCluster rootCluster = new ClusterImpl(0, pt);
             //           rootCluster.hierCluster(clusterer);
             //            System.out.println(rootCluster.getSubClusters().toString());
-            
-            for(WebLinkCluster theCluster: clusters){
+
+            for (WebLinkCluster theCluster : clusters) {
                 System.out.println(theCluster.getTitle());
             }
         } catch (IOException ex) {
