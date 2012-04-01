@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import pagelinks.WebLinkDataItem;
 
 public class Dendrogram {
 
@@ -129,6 +131,29 @@ public class Dendrogram {
         int topLevelIndex = getTopLevel();
         for (WebLinkCluster subCluster : getClustersForLevel(topLevelIndex)) {
             theBuilder.append(subCluster.asXML());
+        }
+        theBuilder.append("</cluster>\n");
+        return theBuilder.toString();
+    }
+
+    public String topLevelAsXML() {
+        StringBuilder theBuilder = new StringBuilder();
+        theBuilder.append("<cluster>\n");
+        theBuilder.append("<name>");
+        theBuilder.append("root");
+        theBuilder.append("</name>\n");
+        int topLevelIndex = getTopLevel();
+        List<WebLinkCluster> clustersForLevel = getClustersForLevel(topLevelIndex);
+        for (WebLinkCluster subCluster : clustersForLevel) {
+            Set<WebLinkDataItem> allItems = subCluster.getAllItems();
+
+            for (WebLinkDataItem theItem : allItems) {
+//                theBuilder.append("<cluster>\n");
+                theBuilder.append("<name>");
+                theBuilder.append(theItem.getSource());
+                theBuilder.append("</name>\n");
+//                theBuilder.append("</cluster>\n");
+            }
         }
         theBuilder.append("</cluster>\n");
         return theBuilder.toString();

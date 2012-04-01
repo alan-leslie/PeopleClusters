@@ -1,0 +1,7 @@
+LinkFileName = cluster4.psv
+PeopleOnly =false
+NoOfClusters = 4
+NoOfIterations = 10
+ClusterType = KMeans
+
+

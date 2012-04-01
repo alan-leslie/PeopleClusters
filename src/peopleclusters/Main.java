@@ -152,13 +152,14 @@ public class Main {
 
                 Dendrogram dnd = rock.cluster();
                 //            dnd.printAll();
-                // output cost 
+                
+                // TODO output cost 
                 // get top level and calc cost for that?
                 int topLevel = dnd.getTopLevel();
                 List<WebLinkCluster> clustersForLevel = dnd.getClustersForLevel(topLevel);
                 int noOfTopLevelClusters = clustersForLevel.size();
 
-                DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
+                DumpFile.writeXML("ROCKTest.xml", dnd.topLevelAsXML());
             }
         } catch (Exception ex) {
             theLogger.log(Level.SEVERE, null, ex);

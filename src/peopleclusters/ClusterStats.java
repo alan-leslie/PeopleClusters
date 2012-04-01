@@ -5,6 +5,7 @@
 package peopleclusters;
 
 import java.util.List;
+import java.util.Set;
 import pagelinks.LinkMagnitude;
 import pagelinks.LinkMagnitudeVector;
 

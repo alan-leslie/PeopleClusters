@@ -1,6 +1,7 @@
 package cluster;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import pagelinks.LinkMagnitudeVectorImpl;
 import pagelinks.LinkMagnitudeVector;
 import pagelinks.WebLinkDataItem;
@@ -16,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import pagelinks.DataSetManager;
 import pagelinks.LinkMagnitudeImpl;
+import pagelinks.MagnitudeComparator;
 import pagelinks.PageLinksDataSetManagerImpl;
 
 public class ClusterImpl implements WebLinkCluster {
@@ -84,7 +86,8 @@ public class ClusterImpl implements WebLinkCluster {
     public LinkMagnitudeVector getCenter() {
         return center;
     }
-    
+ 
+    // TODO - sort the set by magnitudes
     @Override
     public List<LinkMagnitude> getAverages() {
         List<LinkMagnitude> retVal = new ArrayList<LinkMagnitude>();
@@ -95,7 +98,7 @@ public class ClusterImpl implements WebLinkCluster {
                 LinkMagnitude theMag = findLink(theLink, retVal);
                 
                 if (theMag == null) {
-                    LinkMagnitudeImpl theLinkAverage = new LinkMagnitudeImpl(theItem.getSource(), 1.0);
+                    LinkMagnitudeImpl theLinkAverage = new LinkMagnitudeImpl(theLink, 1.0);
                     retVal.add(theLinkAverage);
                 } else {
                     theMag.setMagnitude(theMag.getMagnitude() + 1.0);
@@ -104,15 +107,18 @@ public class ClusterImpl implements WebLinkCluster {
         }
         
         for (LinkMagnitude theMagnitude : retVal) {
-            theMagnitude.setMagnitude(theMagnitude.getMagnitude() / (double) theItems.size());            
+            double dMag = theMagnitude.getMagnitude();
+            theMagnitude.setMagnitude(dMag / (double) theItems.size());            
         }
+        
+        Collections.sort(retVal, new MagnitudeComparator());
         
         return retVal;
     }
     
     private LinkMagnitude findLink(final String key,
-            final List<LinkMagnitude> theMagnitudes) {
-        LinkMagnitude theMagnitude = (LinkMagnitude) CollectionUtils.find(theMagnitudes, new Predicate() {
+            final Collection<LinkMagnitude> theMagnitudes) {
+        LinkMagnitude retVal = (LinkMagnitude) CollectionUtils.find(theMagnitudes, new Predicate() {
 
             @Override
             public boolean evaluate(Object o) {
@@ -121,7 +127,7 @@ public class ClusterImpl implements WebLinkCluster {
             }
         });
         
-        return theMagnitude;
+        return retVal;
     }
     
     public List<WebLinkDataItem> getItems() {
@@ -333,6 +339,16 @@ public class ClusterImpl implements WebLinkCluster {
 
     @Override
     public Set<WebLinkDataItem> getAllItems() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Set<WebLinkDataItem> retVal = new HashSet<WebLinkDataItem>();
+        retVal.addAll(this.getElements());
+        
+        List<WebLinkCluster> theSubClusters= this.getSubClusters();
+        
+        for(WebLinkCluster theSubCluster: theSubClusters){
+            Set<WebLinkDataItem> subDataItems = theSubCluster.getAllItems();
+            retVal.addAll(subDataItems);
+        }     
+        
+        return retVal;
     }
 }
