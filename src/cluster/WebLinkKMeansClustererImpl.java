@@ -150,6 +150,7 @@ public class WebLinkKMeansClustererImpl implements Clusterer {
 
             if (externalLinks == 0) {
                 externalLinks = 1;
+                internalLinks *= 2;
             }
 
             retVal += (double) internalLinks / (double) externalLinks;

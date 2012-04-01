@@ -77,6 +77,13 @@ public class ClusterImpl implements WebLinkCluster {
     public LinkMagnitudeVector getCenter() {
         return center;
     }
+    
+    public LinkMagnitudeVector getAverages(){
+        // TODO work out the averages
+        LinkMagnitudeVector retVal = null;
+        return retVal;
+        
+    }
 
     public List<WebLinkDataItem> getItems() {
         List<WebLinkDataItem> retVal = null;

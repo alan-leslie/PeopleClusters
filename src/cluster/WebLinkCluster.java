@@ -24,4 +24,6 @@ public interface WebLinkCluster {
     public void addDataItem(WebLinkDataItem item);
 
     public void clearItems();
+    
+    public LinkMagnitudeVector getAverages();
 }

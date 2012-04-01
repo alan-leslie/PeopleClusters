@@ -83,43 +83,57 @@ public class Main {
                 }
             }
 
-            double minCost = Double.MAX_VALUE;
-            double maxCost = -1.0;
-
             if (strClusterType.equalsIgnoreCase("KMeans")) {
-                WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(noOfClusters);
+                double minCost = Double.MAX_VALUE;
+                double maxCost = -1.0;
+                List<WebLinkCluster> maxClusters = null;
+                noOfClusters = 10;
+                List<double[]> theCosts = new ArrayList<double[]>();
 
-                clusterer.setDataSet(testData);
+                while (noOfClusters <= 200) {
+                    WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(noOfClusters);
 
-                for (int i = 0; i < noOfIterations; ++i) {
-                    List<WebLinkCluster> clusters = clusterer.cluster();
+                    clusterer.setDataSet(testData);
 
-                    double cost = clusterer.costFunction();
+                    for (int i = 0; i < noOfIterations; ++i) {
+                        List<WebLinkCluster> clusters = clusterer.cluster();
 
-                    for (WebLinkCluster theCluster : clusters) {
-                        int noOfElements = theCluster.getElements().size();
-                        System.out.println("Cluster: " + theCluster.getTitle() + "item count = " + Integer.toString(noOfElements));
-                    }
+                        double cost = clusterer.costFunction();
 
-                    if (cost < minCost) {
-                        Dendrogram dnd = new Dendrogram("TopLevel");
-                        dnd.addLevel(String.valueOf(cost), clusters);
+                        if (cost < minCost) {
+                            Dendrogram dnd = new Dendrogram("TopLevel");
+                            dnd.addLevel(String.valueOf(cost), clusters);
 
-                        DumpFile.writeXML("KMeansMin.xml", dnd.asXML());
-                        minCost = cost;
-                    }
+                            DumpFile.writeXML("KMeansMin.xml", dnd.asXML());
+                            minCost = cost;
+                        }
 
-                    if (cost > maxCost) {
-                        Dendrogram dnd = new Dendrogram("TopLevel");
-                        dnd.addLevel(String.valueOf(cost), clusters);
+                        if (cost > maxCost) {
+                            Dendrogram dnd = new Dendrogram("TopLevel");
+                            dnd.addLevel(String.valueOf(cost), clusters);
 
-                        DumpFile.writeXML("KMeansMax.xml", dnd.asXML());
-                        maxCost = cost;
+                            DumpFile.writeXML("KMeansMax.xml", dnd.asXML());
+                            maxCost = cost;
+                            maxClusters = clusters;
+                        }
                     }
                     
+                    for (WebLinkCluster theCluster : maxClusters) {
+                        int noOfElements = theCluster.getElements().size();
+                        System.out.println("Cluster: " + theCluster.getTitle() + " item count = " + Integer.toString(noOfElements));
+                    }
+                        
                     System.out.println("Max cost = " + String.valueOf(maxCost));
                     System.out.println("Min cost = " + String.valueOf(minCost));
+                    
+                    double[] theCostRange = { minCost, maxCost};
+                    theCosts.add(theCostRange);
+                    noOfClusters += 5;
                 }
+                
+                DumpFile.writeCosts("costs.txt", theCosts);
+                DumpFile.writeAverages("averages.txt", theCosts);
+                DumpFile.writeCentres("centres.txt", theCosts);
             } else {
                 double th = 0.15;
                 ROCKAlgorithm rock = new ROCKAlgorithm(testData, noOfClusters, th);
@@ -135,7 +149,7 @@ public class Main {
                 int topLevel = dnd.getTopLevel();
                 List<WebLinkCluster> clustersForLevel = dnd.getClustersForLevel(topLevel);
                 int noOfTopLevelClusters = clustersForLevel.size();
-                
+
                 DumpFile.writeXML("ROCKTest.xml", dnd.asXML());
             }
         } catch (Exception ex) {
