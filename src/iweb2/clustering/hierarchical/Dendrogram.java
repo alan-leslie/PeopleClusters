@@ -145,15 +145,21 @@ public class Dendrogram {
         int topLevelIndex = getTopLevel();
         List<WebLinkCluster> clustersForLevel = getClustersForLevel(topLevelIndex);
         for (WebLinkCluster subCluster : clustersForLevel) {
+            theBuilder.append("<cluster>\n");
+            theBuilder.append("<name>");
+            theBuilder.append(subCluster.getTitle());
+            theBuilder.append("</name>\n");
+
             Set<WebLinkDataItem> allItems = subCluster.getAllItems();
 
             for (WebLinkDataItem theItem : allItems) {
-//                theBuilder.append("<cluster>\n");
+                theBuilder.append("<cluster>\n");
                 theBuilder.append("<name>");
                 theBuilder.append(theItem.getSource());
                 theBuilder.append("</name>\n");
-//                theBuilder.append("</cluster>\n");
+                theBuilder.append("</cluster>\n");
             }
+            theBuilder.append("</cluster>\n");
         }
         theBuilder.append("</cluster>\n");
         return theBuilder.toString();
