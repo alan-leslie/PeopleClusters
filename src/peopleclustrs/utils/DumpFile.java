@@ -8,7 +8,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import pagelinks.LinkMagnitude;
 import pagelinks.PageLinks;
+import peopleclusters.ClusterStats;
 
 /**
  *
@@ -97,11 +99,59 @@ public class DumpFile {
         }
     }
 
-    public static void writeAverages(String string, List<double[]> theCosts) {
-        //throw new UnsupportedOperationException("Not yet implemented");
+    public static void writeAverages(String fileName, List<ClusterStats> theAverages) {
+        FileWriter theWriter = null;
+        try {
+            theWriter = new FileWriter(fileName);
+            BufferedWriter out = new BufferedWriter(theWriter);
+
+            int noOfClusters = 10;
+            for (ClusterStats theStats : theAverages) {
+                out.write("Cluster name = " + theStats.getName() + "\n");
+                for(LinkMagnitude theAverage: theStats.getAverages()){
+                    out.write(theAverage.getLink() + " - " + String.valueOf(theAverage.getMagnitude()) + "\n");
+                }
+                
+                out.flush();
+            }
+        } catch (IOException e) {
+            // ...
+        } finally {
+            if (null != theWriter) {
+                try {
+                    theWriter.close();
+                } catch (IOException e) {
+                    /* .... */
+                }
+            }
+        }
     }
 
-    public static void writeCentres(String string, List<double[]> theCosts) {
-        //throw new UnsupportedOperationException("Not yet implemented");
+    public static void writeCentres(String fileName, List<ClusterStats> theCentres) {
+        FileWriter theWriter = null;
+        try {
+            theWriter = new FileWriter(fileName);
+            BufferedWriter out = new BufferedWriter(theWriter);
+
+            int noOfClusters = 10;
+            for (ClusterStats theStats : theCentres) {
+                out.write("Cluster name = " + theStats.getName() + "\n");           
+                for(LinkMagnitude theMag: theStats.getCentre().getLinkMagnitudes()){
+                    out.write(theMag.getLink() + " - " + String.valueOf(theMag.getMagnitude()) + "\n");
+                }
+                
+                out.flush();
+            }
+        } catch (IOException e) {
+            // ...
+        } finally {
+            if (null != theWriter) {
+                try {
+                    theWriter.close();
+                } catch (IOException e) {
+                    /* .... */
+                }
+            }
+        }
     }
 }

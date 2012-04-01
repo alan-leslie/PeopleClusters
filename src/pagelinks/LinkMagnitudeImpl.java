@@ -45,4 +45,9 @@ public class LinkMagnitudeImpl implements LinkMagnitude {
         }
         return 0;
     }
+
+    @Override
+    public void setMagnitude(double newMag) {
+        magnitude = newMag;
+    }
 }

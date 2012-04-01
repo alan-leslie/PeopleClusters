@@ -4,6 +4,7 @@ import pagelinks.LinkMagnitudeVector;
 import pagelinks.WebLinkDataItem;
 import java.util.List;
 import java.util.Set;
+import pagelinks.LinkMagnitude;
 
 public interface WebLinkCluster {
     public LinkMagnitudeVector getCenter();
@@ -25,5 +26,6 @@ public interface WebLinkCluster {
 
     public void clearItems();
     
-    public LinkMagnitudeVector getAverages();
+    public List<LinkMagnitude> getAverages();
+    public Set<WebLinkDataItem> getAllItems();
 }

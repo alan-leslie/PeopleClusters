@@ -87,10 +87,10 @@ public class Main {
                 double minCost = Double.MAX_VALUE;
                 double maxCost = -1.0;
                 List<WebLinkCluster> maxClusters = null;
-                noOfClusters = 10;
-                List<double[]> theCosts = new ArrayList<double[]>();
-
-                while (noOfClusters <= 200) {
+//                noOfClusters = 105;
+//                List<double[]> theCosts = new ArrayList<double[]>();
+//
+//                while (noOfClusters <= 150) {
                     WebLinkKMeansClustererImpl clusterer = new WebLinkKMeansClustererImpl(noOfClusters);
 
                     clusterer.setDataSet(testData);
@@ -118,22 +118,30 @@ public class Main {
                         }
                     }
                     
+                    List<ClusterStats> theAverages = new ArrayList<ClusterStats>();
+                    List<ClusterStats> theCentres = new ArrayList<ClusterStats>();
+                    
                     for (WebLinkCluster theCluster : maxClusters) {
                         int noOfElements = theCluster.getElements().size();
                         System.out.println("Cluster: " + theCluster.getTitle() + " item count = " + Integer.toString(noOfElements));
+                        ClusterStats theAverage = new ClusterStats(theCluster.getTitle(), theCluster.getAverages(), null);
+                        theAverages.add(theAverage);
+                        ClusterStats theCentre = new ClusterStats(theCluster.getTitle(), null, theCluster.getCenter());
+                        theCentres.add(theCentre);
                     }
                         
                     System.out.println("Max cost = " + String.valueOf(maxCost));
                     System.out.println("Min cost = " + String.valueOf(minCost));
                     
-                    double[] theCostRange = { minCost, maxCost};
-                    theCosts.add(theCostRange);
-                    noOfClusters += 5;
-                }
+//                    double[] theCostRange = { minCost, maxCost};
+//                    theCosts.add(theCostRange);
+//                    noOfClusters += 5;
+//                }
                 
-                DumpFile.writeCosts("costs.txt", theCosts);
-                DumpFile.writeAverages("averages.txt", theCosts);
-                DumpFile.writeCentres("centres.txt", theCosts);
+//                DumpFile.writeCosts("costs.txt", theCosts);
+
+                DumpFile.writeAverages("averages.txt", theAverages);
+                DumpFile.writeCentres("centres.txt", theCentres);
             } else {
                 double th = 0.15;
                 ROCKAlgorithm rock = new ROCKAlgorithm(testData, noOfClusters, th);
